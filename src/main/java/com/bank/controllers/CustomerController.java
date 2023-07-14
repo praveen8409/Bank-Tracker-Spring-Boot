@@ -15,10 +15,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bank.entities.Account;
 import com.bank.entities.Customer;
+import com.bank.entities.repositories.AccountRepository;
+import com.bank.entities.repositories.CustomerRepository;
+import com.bank.exceptions.AccountNotFoundException;
 import com.bank.exceptions.CustomerNotFoundException;
 import com.bank.exceptions.IdNotFoundException;
 import com.bank.services.CustomerService;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.validation.Valid;
 
@@ -29,6 +34,14 @@ public class CustomerController {
 
 	@Autowired
 	CustomerService customerService;
+	
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	AccountRepository accountRepository;
+	
+	
 	
 	// creating a new customer
 	@PostMapping("/create")
@@ -91,5 +104,72 @@ public class CustomerController {
 		 customerService.deleteAllCustomers();
 		
 		return new ResponseEntity<String>("Deleted all Customers Successfully", HttpStatus.OK);
+	}
+	
+	@PostMapping("/withdraw/{customerId}")
+	public ResponseEntity<?> withdraw(@Valid @PathVariable("customerId") int customerId, @RequestBody ObjectNode obj) throws AccountNotFoundException{
+		System.out.println("Object :" + obj);
+		
+		String res = "";
+		int minBalance = 500;
+		
+		int accountNumber = obj.get("accountNumber").asInt();
+		int balance = obj.get("balance").asInt();
+		
+		Account account = accountRepository.findByAccountNumber(accountNumber);
+		
+		if(! accountRepository.existsById(accountNumber)) throw new AccountNotFoundException();
+		
+		double customerBalance = account.getBalance();
+		if(customerBalance > minBalance && customerBalance >= balance) {
+			res = "Withdrawn Successfully";
+			customerService.withdraw(customerId, accountNumber, balance);
+		}
+		else {
+			res = "Insufficient Balance";
+		}
+		
+		return new ResponseEntity<String>(res, HttpStatus.OK);
+		
+	}
+	
+	@PostMapping("/credit/{customerId}")
+	public ResponseEntity<?> credit(@PathVariable ("customerId") int customerId, @RequestBody ObjectNode obj) throws AccountNotFoundException{
+		System.out.println("Object" + obj);
+		
+		int accountNumber = obj.get("accountNumber").asInt();
+		int balance = obj.get("balance").asInt();
+		Account account = accountRepository.findByAccountNumber(accountNumber);
+		
+		if(! accountRepository.existsById(accountNumber)) throw new AccountNotFoundException();
+		
+		customerService.credit(customerId, accountNumber, balance);
+		
+		return new ResponseEntity<String>("Credit Successfully", HttpStatus.OK);
+	}
+	
+	@PostMapping("/transfer/fund/{fromAccount}/{toAccount}/{ammount}")
+	public ResponseEntity<?> transferFund(@PathVariable("fromAccount") int fromAccount, @PathVariable("toAccount") int toAccount, @PathVariable("ammount") int ammount) throws AccountNotFoundException{
+		
+		Account account1 = accountRepository.findByAccountNumber(fromAccount);
+		if(! accountRepository.existsById(fromAccount)) throw new AccountNotFoundException();
+		
+		Account account2 = accountRepository.findByAccountNumber(fromAccount);
+		if(! accountRepository.existsById(toAccount)) throw new AccountNotFoundException();
+		
+		double customer1Balance = account1.getBalance();
+		
+		String res = "";
+		int minBal = 500;
+		
+		if( customer1Balance >= ammount + minBal) {
+			res = "Transfer Successfully";
+			customerService.transfer(fromAccount, toAccount, ammount);
+		}else {
+			res = "Insufficient Balance";
+		}
+		
+		return new ResponseEntity<String>(res ,HttpStatus.OK);
+		
 	}
 }

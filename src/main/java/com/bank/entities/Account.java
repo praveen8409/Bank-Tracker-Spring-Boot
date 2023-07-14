@@ -10,6 +10,9 @@ public class Account {
 	Integer accountNumber;
 	int balance;
 	String accountType;
+	
+	
+	
 	public Account(Integer accountNumber, int balance, String accountType) {
 		super();
 		this.accountNumber = accountNumber;
@@ -38,11 +41,15 @@ public class Account {
 	public void setAccountType(String accountType) {
 		this.accountType = accountType;
 	}
+	
+	
+	
 	@Override
 	public String toString() {
 		return "Account [accountNumber=" + accountNumber + ", balance=" + balance + ", accountType=" + accountType
 				+ "]";
 	}
+	
 	
 	
 }
