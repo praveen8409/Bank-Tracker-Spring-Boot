@@ -50,7 +50,7 @@ public class AccountController {
 	}
 	
 	@GetMapping("/accountList")
-	public ResponseEntity<List<Account>> getAllACcounts() throws AccountNotFoundException{
+	public ResponseEntity<List<Account>> getAllACcounts(){
 		if(accountService.getAllAcounts().isEmpty()) {
 			throw new AccountNotFoundException();
 		}
@@ -59,7 +59,7 @@ public class AccountController {
 	}
 	
 	@GetMapping("/getAccount/{accountNumber}")
-	public ResponseEntity<Account> getAccountByAccountNumber(@PathVariable("accountNumber") int accountNumber) throws AccountNotFoundException{
+	public ResponseEntity<Account> getAccountByAccountNumber(@PathVariable("accountNumber") int accountNumber) {
 		if(accountService.getAccount(accountNumber) == null) {
 			throw new AccountNotFoundException();
 		}
@@ -70,7 +70,7 @@ public class AccountController {
 	}
 	
 	 @GetMapping("/getCustomer/{accountNumber}")
-	    public ResponseEntity<Customer> getCustomerByAccountNumber(@PathVariable("accountNumber") int accountNumber) throws CustomerNotFoundException {
+	    public ResponseEntity<Customer> getCustomerByAccountNumber(@PathVariable("accountNumber") int accountNumber){
 	        Customer customer = customerRepository.findByAccountAccountNumber(accountNumber);
 	        if (customer == null) {
 	            throw new CustomerNotFoundException();

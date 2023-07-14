@@ -3,7 +3,6 @@ package com.bank.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +52,7 @@ public class CustomerController {
 	
 	// Get all Customer from database
 	@GetMapping("/customerList")
-	public ResponseEntity<List<Customer>> getAllCustomers() throws CustomerNotFoundException{
+	public ResponseEntity<List<Customer>> getAllCustomers() {
 		if(customerService.getAllCustomers().isEmpty()) {
 			throw new CustomerNotFoundException();
 		}
@@ -63,7 +62,7 @@ public class CustomerController {
 	
 		// Get Customer by its Id
 	@GetMapping("/getCustomerById/{customerId}")
-	public ResponseEntity<Customer> getCustomerById(@PathVariable("customerId") int customerId) throws IdNotFoundException{
+	public ResponseEntity<Customer> getCustomerById(@PathVariable("customerId") int customerId)  {
 		if(customerService.getCustomerById(customerId) == null) {
 			throw new IdNotFoundException();
 			
@@ -74,7 +73,7 @@ public class CustomerController {
 	
 	// Update Customer details by its Id
 	@PutMapping("/updateById/{customerId}")
-	public ResponseEntity<?> updateCustomerById(@PathVariable("customerId") int customerId, @RequestBody Customer customer) throws IdNotFoundException{
+	public ResponseEntity<?> updateCustomerById(@PathVariable("customerId") int customerId, @RequestBody Customer customer) {
 		if(customerService.getCustomerById(customerId) == null) {
 			throw new IdNotFoundException();	
 		}
@@ -86,7 +85,7 @@ public class CustomerController {
 	
 	// Delete customer from database by its id
 	@DeleteMapping("/deleteById/{customerId}")
-	public ResponseEntity<?> deleteCustomerById(@PathVariable("customerId") int customerId) throws IdNotFoundException{
+	public ResponseEntity<?> deleteCustomerById(@PathVariable("customerId") int customerId){
 		if(customerService.getCustomerById(customerId) == null) {
 			throw new IdNotFoundException();	
 		}
@@ -107,7 +106,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/withdraw/{customerId}")
-	public ResponseEntity<?> withdraw(@Valid @PathVariable("customerId") int customerId, @RequestBody ObjectNode obj) throws AccountNotFoundException{
+	public ResponseEntity<?> withdraw(@Valid @PathVariable("customerId") int customerId, @RequestBody ObjectNode obj){
 		System.out.println("Object :" + obj);
 		
 		String res = "";
@@ -134,7 +133,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/credit/{customerId}")
-	public ResponseEntity<?> credit(@PathVariable ("customerId") int customerId, @RequestBody ObjectNode obj) throws AccountNotFoundException{
+	public ResponseEntity<?> credit(@PathVariable ("customerId") int customerId, @RequestBody ObjectNode obj) {
 		System.out.println("Object" + obj);
 		
 		int accountNumber = obj.get("accountNumber").asInt();
@@ -149,7 +148,7 @@ public class CustomerController {
 	}
 	
 	@PostMapping("/transfer/fund/{fromAccount}/{toAccount}/{ammount}")
-	public ResponseEntity<?> transferFund(@PathVariable("fromAccount") int fromAccount, @PathVariable("toAccount") int toAccount, @PathVariable("ammount") int ammount) throws AccountNotFoundException{
+	public ResponseEntity<?> transferFund(@PathVariable("fromAccount") int fromAccount, @PathVariable("toAccount") int toAccount, @PathVariable("ammount") int ammount){
 		
 		Account account1 = accountRepository.findByAccountNumber(fromAccount);
 		if(! accountRepository.existsById(fromAccount)) throw new AccountNotFoundException();

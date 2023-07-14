@@ -1,5 +1,5 @@
 package com.bank.exceptions;
 
-public class IdNotFoundException extends Exception {
-
+public class IdNotFoundException extends RuntimeException {
+	
 }
